@@ -1,9 +1,8 @@
 import { Server } from "http";
 import { app } from "./app";
-import { prisma } from "./config/db";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { prisma } from "./app/config/db";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
+import { envConfig } from "./app/config";
 
 let server: Server;
 
@@ -20,8 +19,8 @@ async function connectToDB() {
 async function main() {
   try {
     await connectToDB();
-    server = app.listen(process.env.PORT, () => {
-      console.log(`Server is listening on Port ${process.env.PORT}`);
+    server = app.listen(envConfig.PORT, () => {
+      console.log(`Server is listening on Port ${envConfig.PORT}`);
     });
   } catch (error) {
     console.error("server error => ", error);
@@ -29,4 +28,7 @@ async function main() {
   }
 }
 
-main();
+(async () => {
+  await main();
+  await seedSuperAdmin();
+})();
